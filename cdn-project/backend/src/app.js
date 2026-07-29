@@ -1,38 +1,33 @@
 import express from "express";
-import dotenv from "dotenv";
-import compression from "compression";
+
+import compressionMiddleware from "./compression/Compression.js";
+import logger from "./middleware/logger.js";
+
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 import proxyRoutes from "./routes/proxyRoutes.js";
 
-// Load environment variables
-dotenv.config();
 
 const app = express();
 
-// Middleware
+
 app.use(express.json());
 
-// Enable Gzip Compression
-app.use(compression());
 
-// Health check route
-app.get("/", (req, res) => {
-    res.json({
-        message: "NexaCDN Running"
-    });
-});
+// Logger
+app.use(logger);
 
-// Reverse Proxy Route
-app.use("/proxy", proxyRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
+// Compression
+app.use(compressionMiddleware);
 
-    console.error(err.message);
 
-    res.status(500).json({
-        message: "Internal Server Error"
-    });
+// Analytics route FIRST
+app.use("/", analyticsRoutes);
 
-});
+
+// Proxy route LAST
+app.use("/", proxyRoutes);
+
+
 
 export default app;

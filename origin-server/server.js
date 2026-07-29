@@ -4,26 +4,34 @@ const app = express();
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
 
-app.get("/", (req,res)=>{
     res.json({
-        message:"Origin server running 🚀",
-        server:"Origin"
+
+        server: "Origin Server 1",
+
+        message: "Running"
+
     });
+
 });
 
+app.get("/data", (req, res) => {
 
-app.get("/data", (req,res)=>{
     res.json({
-        name:"NexaCDN",
-        content:"Data from origin server",
-        time:new Date()
+
+        server: "Origin Server 1",
+
+        content: "Data from Origin Server 1",
+
+        time: new Date()
+
     });
+
 });
 
+app.listen(8000, () => {
 
-const PORT = 8000;
+    console.log("Origin Server 1 running on port 8000");
 
-app.listen(PORT,()=>{
-    console.log(`Origin server running on ${PORT}`);
 });

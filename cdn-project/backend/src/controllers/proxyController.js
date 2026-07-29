@@ -1,47 +1,176 @@
-import proxyService from "../services/proxyService.js";
+import axios from "axios";
+
+import CacheManager from "../cache/CacheManager.js";
+
+import getOrigin, {
+    reportSuccess,
+    reportFailure
+} from "../loadBalancer/OriginBalancer.js";
 
 
 class ProxyController {
 
 
-    async proxy(req,res){
+    async handleProxy(req, res) {
+
+
+        const cacheKey = req.originalUrl;
 
 
         try {
 
 
-            const result =
-                await proxyService.handleRequest(
-                    req.originalUrl
+            const cachedData =
+            await CacheManager.get(cacheKey);
+
+
+
+            if(cachedData){
+
+
+                console.log("CACHE HIT");
+
+
+                res.setHeader(
+                    "X-Cache",
+                    "HIT"
+                );
+
+
+                return res.json({
+
+                    source:"cache",
+
+                    data:cachedData
+
+                });
+
+
+            }
+
+
+        }
+        catch(err){
+
+
+            console.log(
+                "Cache lookup failed:",
+                err.message
+            );
+
+
+        }
+
+
+
+        console.log("CACHE MISS");
+
+
+
+        const path =
+        req.originalUrl.replace(
+            "/proxy",
+            ""
+        );
+
+
+
+        const maxAttempts = 2;
+
+
+
+        for(
+            let attempt=0;
+            attempt<maxAttempts;
+            attempt++
+        ){
+
+
+            const origin =
+            getOrigin();
+
+
+
+            const targetURL =
+            origin + path;
+
+
+
+            try{
+
+
+                console.log(
+                    "Request sent to:",
+                    targetURL
                 );
 
 
 
-            res
-            .status(result.status)
-            .set(result.headers)
-            .json(result.body);
+                const response =
+                await axios.get(
+                    targetURL,
+                    {
+                        timeout:3000
+                    }
+                );
 
+
+
+                reportSuccess(origin);
+
+
+
+                await CacheManager.set(
+                    cacheKey,
+                    response.data,
+                    300
+                );
+
+
+
+                res.setHeader(
+                    "X-Cache",
+                    "MISS"
+                );
+
+
+
+                return res.json({
+
+                    source:"origin",
+
+                    originServer:origin,
+
+                    data:response.data
+
+                });
+
+
+            }
+            catch(error){
+
+
+                console.log(
+                    `Origin ${origin} failed:`,
+                    error.message
+                );
+
+
+                reportFailure(origin);
+
+
+            }
 
 
         }
-        catch(error){
 
 
-            console.log(
-                error.message
-            );
 
+        res.status(502).json({
 
-            res.status(500).json({
+            error:"Origin server unavailable"
 
-                message:
-                "Proxy request failed"
-
-            });
-
-
-        }
+        });
 
 
     }
