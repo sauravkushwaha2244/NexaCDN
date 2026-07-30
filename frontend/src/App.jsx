@@ -1,17 +1,29 @@
+import "./App.css";
+
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 
+function App() {
 
-function App(){
+    return (
 
+        <div className="app">
 
- return (
+            <Sidebar />
 
-    <Dashboard/>
+            <div className="main">
 
- );
+                <Navbar />
 
+                <Dashboard />
+
+            </div>
+
+        </div>
+
+    );
 
 }
-
 
 export default App;

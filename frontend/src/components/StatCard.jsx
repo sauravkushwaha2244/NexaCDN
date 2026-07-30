@@ -1,9 +1,8 @@
-function StatCard({title,value}) {
-
+function StatCard({ title, value }) {
 
     return (
 
-        <div className="card">
+        <div className="stat-card">
 
             <h3>{title}</h3>
 
@@ -13,8 +12,6 @@ function StatCard({title,value}) {
 
     );
 
-
 }
-
 
 export default StatCard;

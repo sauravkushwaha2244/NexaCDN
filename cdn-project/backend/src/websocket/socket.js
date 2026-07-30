@@ -4,17 +4,16 @@ import { Server } from "socket.io";
 let io;
 
 
-
 export function initSocket(server){
 
 
-    io = new Server(server, {
+    io = new Server(server,{
 
-        cors: {
+        cors:{
 
-            origin: "http://localhost:5173",
+            origin:"http://localhost:5173",
 
-            methods: [
+            methods:[
                 "GET",
                 "POST"
             ]
@@ -49,9 +48,26 @@ export function sendAnalytics(data){
 
     if(io){
 
-
         io.emit(
             "analyticsUpdate",
+            data
+        );
+
+    }
+
+
+}
+
+
+
+export function sendRequestLog(data){
+
+
+    if(io){
+
+
+        io.emit(
+            "requestUpdate",
             data
         );
 

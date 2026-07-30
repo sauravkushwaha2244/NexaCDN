@@ -17,50 +17,55 @@ class Analytics {
         this.responseTimes = [];
 
     }
-
 request(){
 
     this.totalRequests++;
 
-    console.log(
-        "Analytics Requests:",
-        this.totalRequests
+    sendAnalytics(
+        this.getStats()
     );
 
 }
 
 
+hit(){
+
+    this.cacheHits++;
+
+    sendAnalytics(
+        this.getStats()
+    );
+
+}
 
 
-    hit(){
+miss(){
 
-        this.cacheHits++;
+    this.cacheMiss++;
 
-    }
+    sendAnalytics(
+        this.getStats()
+    );
 
-
-
-    miss(){
-
-        this.cacheMiss++;
-
-    }
+}
 
 
+origin(){
 
-    origin(){
+    this.originRequests++;
 
-        this.originRequests++;
+    sendAnalytics(
+        this.getStats()
+    );
 
-    }
+}
 
 
+responseTime(time){
 
-    responseTime(time){
+    this.responseTimes.push(time);
 
-        this.responseTimes.push(time);
-
-    }
+}
 
 
 

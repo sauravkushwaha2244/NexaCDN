@@ -2,119 +2,236 @@ import axios from "axios";
 
 import CacheManager from "../cache/CacheManager.js";
 
-import analytics from "../analytics/Analytics.js";
-
 import getOrigin, {
     reportSuccess,
     reportFailure
 } from "../loadBalancer/OriginBalancer.js";
+
+import { 
+    sendRequestLog,
+    sendAnalytics
+} from "../websocket/socket.js";
+
+import analytics from "../analytics/Analytics.js";
+
 
 
 class ProxyController {
 
 
     async handleProxy(req, res) {
-        console.log("Analytics Object:", analytics);
 
-analytics.request();
 
         const startTime = Date.now();
 
+
         const cacheKey = req.originalUrl;
 
-        // Total Request
+
+
+        // Analytics total request
+
         analytics.request();
+
+
+
+
+        // ==========================
+        // CACHE CHECK
+        // ==========================
+
 
         try {
 
+
             const cachedData =
-                await CacheManager.get(cacheKey);
+            await CacheManager.get(cacheKey);
 
-            if (cachedData) {
 
-                console.log("CACHE HIT");
+
+            if(cachedData){
+
+
+                console.log(
+                    "CACHE HIT"
+                );
+
 
                 analytics.hit();
 
+
+                const responseTime =
+                Date.now() - startTime;
+
+
                 analytics.responseTime(
-                    Date.now() - startTime
+                    responseTime
                 );
+
+
+
+                sendRequestLog({
+
+                    time:
+                    new Date()
+                    .toLocaleTimeString(),
+
+                    url:
+                    req.originalUrl,
+
+                    source:
+                    "cache",
+
+                    server:
+                    "-",
+
+                    responseTime
+
+                });
+
+
+
+                sendAnalytics(
+                    analytics.getStats()
+                );
+
+
 
                 res.setHeader(
                     "X-Cache",
                     "HIT"
                 );
 
+
+
                 return res.json({
 
-                    source: "cache",
+                    source:
+                    "cache",
 
-                    data: cachedData
+                    data:
+                    cachedData
 
                 });
 
+
             }
 
+
         }
-        catch (err) {
+
+        catch(error){
+
 
             console.log(
-                "Cache lookup failed:",
-                err.message
+                "Cache Error:",
+                error.message
             );
+
 
         }
 
 
-        console.log("CACHE MISS");
+
+
+
+        console.log(
+            "CACHE MISS"
+        );
+
 
         analytics.miss();
 
 
+
+
+
         const path =
-            req.originalUrl.replace(
-                "/proxy",
-                ""
-            );
+        req.originalUrl.replace(
+            "/proxy",
+            ""
+        );
+
 
 
         const maxAttempts = 2;
 
 
-        for (
+
+
+        // ==========================
+        // ORIGIN REQUEST
+        // ==========================
+
+
+        for(
             let attempt = 0;
             attempt < maxAttempts;
             attempt++
-        ) {
+        ){
+
+
 
             const origin =
-                getOrigin();
+            getOrigin();
+
+
+
 
             const targetURL =
-                origin + path;
+            origin + path;
 
-            try {
+
+
+            try{
+
 
                 console.log(
                     "Request sent to:",
                     targetURL
                 );
 
+
+
                 const response =
-                    await axios.get(
-                        targetURL,
-                        {
-                            timeout: 3000
-                        }
-                    );
+                await axios.get(
+
+                    targetURL,
+
+                    {
+                        timeout:3000
+                    }
+
+                );
+
+
+
+
+                reportSuccess(
+                    origin
+                );
+
+
 
                 analytics.origin();
 
+
+
+
+                const responseTime =
+                Date.now()
+                -
+                startTime;
+
+
+
+
                 analytics.responseTime(
-                    Date.now() - startTime
+                    responseTime
                 );
 
-                reportSuccess(origin);
+
+
 
                 await CacheManager.set(
 
@@ -126,48 +243,112 @@ analytics.request();
 
                 );
 
+
+
+
+
+                sendRequestLog({
+
+                    time:
+                    new Date()
+                    .toLocaleTimeString(),
+
+                    url:
+                    req.originalUrl,
+
+                    source:
+                    "origin",
+
+                    server:
+                    origin,
+
+                    responseTime
+
+                });
+
+
+
+
+
+                sendAnalytics(
+                    analytics.getStats()
+                );
+
+
+
+
+
                 res.setHeader(
                     "X-Cache",
                     "MISS"
                 );
 
+
+
+
+
                 return res.json({
 
-                    source: "origin",
+                    source:
+                    "origin",
 
-                    originServer: origin,
+                    originServer:
+                    origin,
 
-                    data: response.data
+                    data:
+                    response.data
 
                 });
 
+
+
             }
-            catch (error) {
+
+            catch(error){
+
 
                 console.log(
 
                     `Origin ${origin} failed:`,
-
                     error.message
 
                 );
 
-                reportFailure(origin);
+
+
+                reportFailure(
+                    origin
+                );
+
 
             }
+
 
         }
 
 
-        res.status(502).json({
 
-            error: "Origin server unavailable"
+
+
+        // ==========================
+        // ALL ORIGINS FAILED
+        // ==========================
+
+
+        res.status(502)
+        .json({
+
+            error:
+            "Origin server unavailable"
 
         });
 
+
     }
 
+
 }
+
 
 
 export default new ProxyController();
