@@ -1,64 +1,20 @@
 import express from "express";
 
-
-import compressionMiddleware 
-from "./compression/Compression.js";
-
-
-import logger 
-from "./middleware/logger.js";
-
-
-import rateLimiter
-from "./middleware/rateLimiter.js";
-
-
-import securityMiddleware
-from "./middleware/security.js";
-
-
-import analyticsRoutes 
-from "./routes/analyticsRoutes.js";
-
-
-import proxyRoutes 
-from "./routes/proxyRoutes.js";
-
-
+import compressionMiddleware from "./compression/Compression.js";
+import logger from "./middleware/logger.js";
+import rateLimiter from "./middleware/rateLimiter.js";
+import securityMiddleware from "./middleware/security.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
+import proxyRoutes from "./routes/proxyRoutes.js";
 
 const app = express();
 
-
-
 app.use(express.json());
-
-
-// Security Layer
-
 app.use(rateLimiter);
-
 app.use(securityMiddleware);
-
-
-// Logger
-
 app.use(logger);
-
-
-// Compression
-
 app.use(compressionMiddleware);
-
-
-// Analytics
-
-app.use("/",analyticsRoutes);
-
-
-// Proxy
-
-app.use("/",proxyRoutes);
-
-
+app.use("/", analyticsRoutes);
+app.use("/", proxyRoutes);
 
 export default app;

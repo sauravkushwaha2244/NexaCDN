@@ -4,18 +4,15 @@ const origins = [
 ];
 
 let current = 0;
-
-// Track failures so we don't keep hammering a dead origin
 const failCount = {};
 origins.forEach(o => failCount[o] = 0);
 
-const MAX_FAILS = 3;       // after 3 failures, mark as down
-const RETRY_AFTER_MS = 10000; // try again after 10s
+const MAX_FAILS = 3;
+const RETRY_AFTER_MS = 10000;
 const downSince = {};
 
 function isHealthy(origin) {
     if (failCount[origin] < MAX_FAILS) return true;
-    // allow retry after cooldown
     return Date.now() - downSince[origin] > RETRY_AFTER_MS;
 }
 
@@ -25,7 +22,6 @@ function getOrigin() {
         current = (current + 1) % origins.length;
         if (isHealthy(origin)) return origin;
     }
-    // all origins unhealthy — return one anyway, let the caller fail properly
     return origins[current];
 }
 
