@@ -1,3 +1,6 @@
+
+import {sendAnalytics}
+from "../websocket/socket.js";
 class Analytics {
 
 
@@ -15,13 +18,17 @@ class Analytics {
 
     }
 
+request(){
 
+    this.totalRequests++;
 
-    request(){
+    console.log(
+        "Analytics Requests:",
+        this.totalRequests
+    );
 
-        this.totalRequests++;
+}
 
-    }
 
 
 

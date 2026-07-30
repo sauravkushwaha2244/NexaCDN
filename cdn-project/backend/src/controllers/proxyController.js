@@ -2,6 +2,8 @@ import axios from "axios";
 
 import CacheManager from "../cache/CacheManager.js";
 
+import analytics from "../analytics/Analytics.js";
+
 import getOrigin, {
     reportSuccess,
     reportFailure
@@ -12,169 +14,158 @@ class ProxyController {
 
 
     async handleProxy(req, res) {
+        console.log("Analytics Object:", analytics);
 
+analytics.request();
+
+        const startTime = Date.now();
 
         const cacheKey = req.originalUrl;
 
+        // Total Request
+        analytics.request();
 
         try {
 
-
             const cachedData =
-            await CacheManager.get(cacheKey);
+                await CacheManager.get(cacheKey);
 
-
-
-            if(cachedData){
-
+            if (cachedData) {
 
                 console.log("CACHE HIT");
 
+                analytics.hit();
+
+                analytics.responseTime(
+                    Date.now() - startTime
+                );
 
                 res.setHeader(
                     "X-Cache",
                     "HIT"
                 );
 
-
                 return res.json({
 
-                    source:"cache",
+                    source: "cache",
 
-                    data:cachedData
+                    data: cachedData
 
                 });
 
-
             }
 
-
         }
-        catch(err){
-
+        catch (err) {
 
             console.log(
                 "Cache lookup failed:",
                 err.message
             );
 
-
         }
-
 
 
         console.log("CACHE MISS");
 
+        analytics.miss();
 
 
         const path =
-        req.originalUrl.replace(
-            "/proxy",
-            ""
-        );
-
+            req.originalUrl.replace(
+                "/proxy",
+                ""
+            );
 
 
         const maxAttempts = 2;
 
 
-
-        for(
-            let attempt=0;
-            attempt<maxAttempts;
+        for (
+            let attempt = 0;
+            attempt < maxAttempts;
             attempt++
-        ){
-
+        ) {
 
             const origin =
-            getOrigin();
-
-
+                getOrigin();
 
             const targetURL =
-            origin + path;
+                origin + path;
 
-
-
-            try{
-
+            try {
 
                 console.log(
                     "Request sent to:",
                     targetURL
                 );
 
-
-
                 const response =
-                await axios.get(
-                    targetURL,
-                    {
-                        timeout:3000
-                    }
+                    await axios.get(
+                        targetURL,
+                        {
+                            timeout: 3000
+                        }
+                    );
+
+                analytics.origin();
+
+                analytics.responseTime(
+                    Date.now() - startTime
                 );
-
-
 
                 reportSuccess(origin);
 
-
-
                 await CacheManager.set(
+
                     cacheKey,
+
                     response.data,
+
                     300
+
                 );
-
-
 
                 res.setHeader(
                     "X-Cache",
                     "MISS"
                 );
 
-
-
                 return res.json({
 
-                    source:"origin",
+                    source: "origin",
 
-                    originServer:origin,
+                    originServer: origin,
 
-                    data:response.data
+                    data: response.data
 
                 });
 
-
             }
-            catch(error){
-
+            catch (error) {
 
                 console.log(
-                    `Origin ${origin} failed:`,
-                    error.message
-                );
 
+                    `Origin ${origin} failed:`,
+
+                    error.message
+
+                );
 
                 reportFailure(origin);
 
-
             }
-
 
         }
 
 
-
         res.status(502).json({
 
-            error:"Origin server unavailable"
+            error: "Origin server unavailable"
 
         });
 
-
     }
-
 
 }
 

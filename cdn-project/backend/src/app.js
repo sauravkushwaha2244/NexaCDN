@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 import compressionMiddleware from "./compression/Compression.js";
 import logger from "./middleware/logger.js";
@@ -8,6 +9,7 @@ import proxyRoutes from "./routes/proxyRoutes.js";
 
 
 const app = express();
+app.use(cors());
 
 
 app.use(express.json());
