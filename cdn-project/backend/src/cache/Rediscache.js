@@ -75,3 +75,4 @@ class RedisCache {
 
 
 export default new RedisCache();
+// name changes
