@@ -5,35 +5,19 @@ class RedisCache {
     constructor() {
         this.redis = new Redis({
             host: process.env.REDIS_HOST || "127.0.0.1",
-            port: process.env.REDIS_PORT || 6379,
+            port: process.env.REDIS_PORT || 6379
         });
 
         this.redis.on("connect", () => {
             console.log("Redis connected");
         });
 
-        this.redis.on("error", (err) => {
-            console.log("Redis error:", err.message);
+        this.redis.on("error", (error) => {
+            console.log("Redis error:", error.message);
         });
     }
 
 
-    // Store data in Redis
-    async set(key, value, ttl = 300) {
-        try {
-            await this.redis.set(
-                key,
-                JSON.stringify(value),
-                "EX",
-                ttl
-            );
-        } catch (error) {
-            console.log("Redis SET error:", error.message);
-        }
-    }
-
-
-    // Get data from Redis
     async get(key) {
         try {
             const data = await this.redis.get(key);
@@ -51,7 +35,21 @@ class RedisCache {
     }
 
 
-    // Delete cache
+    async set(key, value, ttl = 300) {
+        try {
+            await this.redis.set(
+                key,
+                JSON.stringify(value),
+                "EX",
+                ttl
+            );
+
+        } catch (error) {
+            console.log("Redis SET error:", error.message);
+        }
+    }
+
+
     async delete(key) {
         try {
             await this.redis.del(key);
@@ -62,7 +60,6 @@ class RedisCache {
     }
 
 
-    // Clear complete cache
     async clear() {
         try {
             await this.redis.flushall();
@@ -73,7 +70,6 @@ class RedisCache {
     }
 
 
-    // Test Redis connection
     async connect() {
         try {
             await this.redis.ping();
@@ -86,4 +82,6 @@ class RedisCache {
 }
 
 
-export default new RedisCache();
+const redisCache = new RedisCache();
+
+export default redisCache;

@@ -28,6 +28,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.1",
     "ioredis": "^5.11.1",
+    "lru-cache": "^11.5.2",
     "morgan": "^1.11.0",
     "socket.io": "^4.8.3"
   }
