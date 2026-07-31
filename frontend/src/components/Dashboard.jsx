@@ -35,16 +35,16 @@ function Dashboard() {
 
 
     useEffect(() => {
-
-
-        // Load initial analytics
-
         fetch("http://localhost:5000/analytics")
+            .then((res) => res.json())
+            .then((data) => {
+                setStats(data);
+            })
+            .catch((err) => {
+                console.log("Analytics error:", err);
+            });
 
-        .then((res)=>res.json())
-
-        .then((data)=>{
-
+        socket.on("analyticsUpdate", (data) => {
             setStats(data);
 
         })
@@ -137,9 +137,6 @@ function Dashboard() {
 
 
 
-            {/* Statistics */}
-
-
             <div className="stats-grid">
 
 
@@ -198,9 +195,6 @@ function Dashboard() {
 
 
 
-            {/* Charts */}
-
-
             <div className="charts-grid">
 
 
@@ -234,9 +228,6 @@ function Dashboard() {
 
 
 
-            {/* Live Requests */}
-
-
             <RequestTable
 
                 requests={requests}
@@ -246,10 +237,6 @@ function Dashboard() {
 
 
 
-
-
-
-            {/* Origin Servers */}
 
 
 
