@@ -84,7 +84,7 @@ function Dashboard({ activeTab }) {
         <>
             <div className="demo-panel">
                 <div className="demo-header">
-                    <span>🚀 Hackathon Demo Mode</span>
+               
                     <div className="demo-buttons">
                         <button className="btn-clear" onClick={clearCache} disabled={running}>🗑️ Clear Cache</button>
                         <button className="btn-demo"  onClick={runDemo}    disabled={running}>
