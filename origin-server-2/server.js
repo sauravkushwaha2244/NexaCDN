@@ -30,8 +30,10 @@ app.get("/data", (req, res) => {
 
 });
 
-app.listen(9000, () => {
+const PORT = process.env.PORT || 9000;
 
-    console.log("Origin Server 2 running on port 9000");
+app.listen(PORT, () => {
+
+    console.log(`Origin Server 2 running on port ${PORT}`);
 
 });

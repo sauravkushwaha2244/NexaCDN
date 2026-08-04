@@ -24,7 +24,9 @@ function Dashboard() {
 
     useEffect(() => {
 
-        fetch("http://localhost:5000/analytics")
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
+        fetch(`${backendUrl}/analytics`)
             .then((res) => res.json())
             .then((data) => {
                 setStats(data);
