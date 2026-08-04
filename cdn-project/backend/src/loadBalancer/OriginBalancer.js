@@ -1,7 +1,7 @@
-const origins = [
-    "http://localhost:8000",
-    "http://localhost:9000"
-];
+const origins = (process.env.ORIGIN_SERVERS || "http://localhost:8000,http://localhost:9000")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
 
 let current = 0;
 const failCount = {};

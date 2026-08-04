@@ -62,7 +62,7 @@ class ProxyController {
                 console.log("Request sent to:", targetURL);
 
                 const response = await axios.get(targetURL, {
-                    timeout: 3000
+                    timeout: 30000  // 30s — Render free tier can take up to 60s to wake up
                 });
 
                 reportSuccess(origin);

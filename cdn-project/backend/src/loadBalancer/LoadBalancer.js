@@ -7,8 +7,10 @@ class LoadBalancer {
 
     constructor(){
 
-        this.servers =
-        process.env.ORIGIN_SERVERS.split(",");
+        this.servers = (process.env.ORIGIN_SERVERS || "")
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
 
         this.currentIndex=0;
 
