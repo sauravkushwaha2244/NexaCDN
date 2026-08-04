@@ -62,7 +62,7 @@ function RequestTable({ requests }) {
                             <tr key={index}>
 
                                 <td>
-                                    {req.time}
+                                    {new Date(req.time).toLocaleTimeString()}
                                 </td>
 
 

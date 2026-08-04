@@ -6,94 +6,70 @@ import {
     LineElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    Filler
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-function TrafficChart({ totalRequests }) {
+function TrafficChart({ history = [] }) {
+
+    const labels  = history.map(h => h.time);
+    const hits    = history.map(h => h.hits);
+    const misses  = history.map(h => h.misses);
 
     const data = {
-
-        labels: [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6"
-        ],
-
+        labels,
         datasets: [
-
             {
-
-                label: "Requests",
-
-                data: [
-
-                    totalRequests,
-                    totalRequests + 2,
-                    totalRequests + 1,
-                    totalRequests + 4,
-                    totalRequests + 3,
-                    totalRequests
-
-                ],
-
-                borderColor: "#2563eb",
-
-                backgroundColor: "#93c5fd",
-
-                tension: 0.4
-
+                label: "Cache Hits",
+                data: hits,
+                borderColor: "#16a34a",
+                backgroundColor: "rgba(22,163,74,0.15)",
+                tension: 0.4,
+                fill: true
+            },
+            {
+                label: "Cache Misses",
+                data: misses,
+                borderColor: "#ef4444",
+                backgroundColor: "rgba(239,68,68,0.10)",
+                tension: 0.4,
+                fill: true
             }
-
         ]
-
     };
 
     const options = {
-
         responsive: true,
-
         plugins: {
-
-            legend: {
-
-                position: "top"
-
-            }
-
+            legend: { position: "top" },
+            title:  { display: false }
+        },
+        scales: {
+            y: { beginAtZero: true, ticks: { precision: 0 } }
         }
-
     };
 
+    if (history.length === 0) {
+        return (
+            <div className="chart-card">
+                <h3>Traffic Analytics</h3>
+                <p style={{ color: "#888", textAlign: "center", marginTop: "40px" }}>
+                    Hit /proxy/data a few times to see live traffic...
+                </p>
+            </div>
+        );
+    }
+
     return (
-
         <div className="chart-card">
-
-            <h3>Traffic Analytics</h3>
-
-            <Line
-                data={data}
-                options={options}
-            />
-
+            <h3>Traffic Analytics — Hits vs Misses</h3>
+            <Line data={data} options={options} />
         </div>
-
     );
-
 }
 
 export default TrafficChart;

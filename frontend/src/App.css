@@ -59,6 +59,35 @@ body{
 
 }
 
+.sidebar li.active {
+    background: #2563eb;
+    color: white;
+}
+
+.section-title {
+    margin-bottom: 24px;
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.cache-info {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.cache-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #444;
+}
+
+
 /* Main */
 
 .main{

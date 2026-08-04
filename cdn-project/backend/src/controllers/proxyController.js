@@ -28,7 +28,7 @@ class ProxyController {
                 analytics.responseTime(responseTime);
 
                 sendRequestLog({
-                    time: new Date().toLocaleTimeString(),
+                    time: new Date().toISOString(),
                     url: req.originalUrl,
                     source: "cache",
                     server: "-",
@@ -74,7 +74,7 @@ class ProxyController {
                 await CacheManager.set(cacheKey, response.data, 300);
 
                 sendRequestLog({
-                    time: new Date().toLocaleTimeString(),
+                    time: new Date().toISOString(),
                     url: req.originalUrl,
                     source: "origin",
                     server: origin,
