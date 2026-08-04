@@ -348,3 +348,125 @@ body{
     font-weight:bold;
 
 }
+
+/* ── HACKATHON DEMO PANEL ───────────────────────── */
+
+.demo-panel {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 2px solid #3b82f6;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 0 30px rgba(59,130,246,0.3);
+}
+
+.demo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.demo-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-clear {
+    background: #374151;
+    color: white;
+    border: 1px solid #6b7280;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.btn-clear:hover:not(:disabled) {
+    background: #4b5563;
+}
+
+.btn-demo {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.2s;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.5);
+}
+
+.btn-demo:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.7);
+}
+
+.btn-demo:disabled, .btn-clear:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.demo-status {
+    color: #93c5fd;
+    font-size: 14px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+}
+
+.demo-badge {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    text-align: center;
+    animation: pulse 0.5s ease;
+}
+
+.badge-hit {
+    background: rgba(22,163,74,0.2);
+    border: 2px solid #16a34a;
+    color: #4ade80;
+}
+
+.badge-miss {
+    background: rgba(220,38,38,0.2);
+    border: 2px solid #dc2626;
+    color: #f87171;
+}
+
+@keyframes pulse {
+    0%   { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1);    opacity: 1; }
+}
+
+.demo-log {
+    background: #0f172a;
+    border-radius: 10px;
+    padding: 12px 16px;
+    max-height: 240px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.log-line {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.log-hit     { color: #4ade80; }
+.log-miss    { color: #f87171; }
+.log-info    { color: #93c5fd; }
+.log-divider { color: #fbbf24; font-weight: bold; padding: 8px 0; }
