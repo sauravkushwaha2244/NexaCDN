@@ -73,10 +73,12 @@ class RedisCache {
     async connect() {
         try {
             await this.redis.ping();
+            this.connected = true;
             console.log("Redis server ready");
 
         } catch (error) {
-            console.log("Redis connection failed:", error.message);
+            this.connected = false;
+            console.warn("Redis unavailable — running without cache:", error.message);
         }
     }
 }

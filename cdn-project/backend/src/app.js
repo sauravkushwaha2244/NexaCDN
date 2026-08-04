@@ -14,6 +14,12 @@ app.use(rateLimiter);
 app.use(securityMiddleware);
 app.use(logger);
 app.use(compressionMiddleware);
+
+// Root health check — required for Render deployments
+app.get("/", (req, res) => {
+    res.json({ status: "ok", service: "NexaCDN", version: "1.0.0" });
+});
+
 app.use("/", analyticsRoutes);
 app.use("/", proxyRoutes);
 

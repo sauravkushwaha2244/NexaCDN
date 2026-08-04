@@ -26,7 +26,12 @@ async function startServer(){
 
 
         const servers =
-        process.env.ORIGIN_SERVERS.split(",");
+        (process.env.ORIGIN_SERVERS || "").split(",").filter(Boolean);
+
+        if (servers.length === 0) {
+            console.warn("Warning: ORIGIN_SERVERS env var is not set.");
+            return;
+        }
 
 
 
