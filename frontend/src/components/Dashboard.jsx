@@ -62,16 +62,33 @@ function Dashboard() {
 
 
 
+    const hitRate = stats.totalRequests > 0
+        ? ((stats.cacheHits / stats.totalRequests) * 100).toFixed(1)
+        : 0;
+
     return (
         <div className="dashboard">
 
             <h1>NexaCDN Dashboard</h1>
 
-            <div>
-                Total Requests: {stats.totalRequests}
+            {/* Stat Cards */}
+            <div className="stats-grid">
+                <StatCard title="Total Requests"     value={stats.totalRequests} />
+                <StatCard title="Cache Hits ✅"       value={stats.cacheHits} />
+                <StatCard title="Cache Misses ❌"     value={stats.cacheMiss} />
+                <StatCard title="Origin Requests"    value={stats.originRequests} />
+                <StatCard title="Avg Response Time"  value={`${stats.averageResponseTime} ms`} />
+                <StatCard title="Hit Rate"           value={`${hitRate}%`} />
             </div>
 
-            <RequestTable requests={requests}/>
+            {/* Charts */}
+            <div className="charts-grid">
+                <CacheChart hits={stats.cacheHits} miss={stats.cacheMiss} />
+                <TrafficChart totalRequests={stats.totalRequests} />
+            </div>
+
+            {/* Live Request Table */}
+            <RequestTable requests={requests} />
 
         </div>
     );
